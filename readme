@@ -1,0 +1,12 @@
+1- Criação venv: necessário para poder rodar o ambiente virtual python e garantir que o projeto sempre funcione independentemente da versão do python e bibliotecas instalada na maquina.
+Instalamos as dependencias do projeto todas dentro de venv. 
+
+Para acessar o ambiente virtual utiliza-se . venv/Scripts/activate no Windows. Para criar utiliza-se "Python -m venv (nome-que-desejar)" (geralmente "venv" mesmo).
+
+2- Instalação django e djangorestframework dentro de venv; (pip install django)
+
+3- criação do projeto django (django-admin startproject nome-que-desejar) - após criação podemos verificar o servidor dentro do arquivo rodando o comando "python manage.py runserver" 
+
+4- criação dos apps django pet e vaccine. (python manage.py startapp pet + python manage.py startapp vaccine);
+
+4- configurar o djangorestframework que será usado para criação da api -> instalação + inclusão no arquivo settings.py;

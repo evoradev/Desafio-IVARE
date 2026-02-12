@@ -1,0 +1,21 @@
+# Bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Ambiente virtual
+venv/
+.env
+.env.*
+
+# Git
+.git/
+.gitignore
+
+# Logs
+*.log
+*.pid
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db

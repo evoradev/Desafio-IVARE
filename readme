@@ -1,12 +1,167 @@
-1- Criação venv: necessário para poder rodar o ambiente virtual python e garantir que o projeto sempre funcione independentemente da versão do python e bibliotecas instalada na maquina.
-Instalamos as dependencias do projeto todas dentro de venv. 
+Desafio IVARE — API Django
 
-Para acessar o ambiente virtual utiliza-se . venv/Scripts/activate no Windows. Para criar utiliza-se "Python -m venv (nome-que-desejar)" (geralmente "venv" mesmo).
+API backend desenvolvida em Django + Django REST Framework, utilizando boas práticas de engenharia de software, isolamento de ambiente, configuração por variáveis de ambiente e banco de dados MySQL em container.
 
-2- Instalação django e djangorestframework dentro de venv; (pip install django)
+Desenvolvido por Rafael Évora — @evoradev 🚀
 
-3- criação do projeto django (django-admin startproject nome-que-desejar) - após criação podemos verificar o servidor dentro do arquivo rodando o comando "python manage.py runserver" 
+Objetivo do Projeto
 
-4- criação dos apps django pet e vaccine. (python manage.py startapp pet + python manage.py startapp vaccine);
+Construir uma API robusta e escalável para gerenciamento de dados relacionados a pets e vacinas, com foco em:
 
-4- configurar o djangorestframework que será usado para criação da api -> instalação + inclusão no arquivo settings.py;
+Padronização de ambiente entre desenvolvedores
+
+Segurança de credenciais via variáveis de ambiente
+
+Arquitetura modular com apps independentes
+
+Preparação para deploy em produção
+
+🛠 Tecnologias Utilizadas
+
+Python 3
+
+Django
+
+Django REST Framework
+
+MySQL (Docker)
+
+python-dotenv
+
+Git / GitHub
+
+Gerenciamento de Dependências
+
+Todas as dependências do projeto são controladas via:
+
+pip freeze > requirements.txt
+
+Isso garante que qualquer desenvolvedor consiga reproduzir exatamente o mesmo ambiente.
+
+Estrutura do Projeto
+Desafio IVARE/
+├── core/              # Configurações principais do projeto
+├── pet/               # App responsável pelo domínio de pets
+├── vaccine/           # App responsável pelo domínio de vacinas
+├── manage.py
+├── requirements.txt
+├── .env.example
+├── .gitignore
+└── README.md
+
+Etapas Realizadas no Projeto
+1. Criação do ambiente virtual (venv)
+
+Foi criado um ambiente virtual Python para:
+
+Isolar dependências do sistema operacional
+
+Garantir compatibilidade entre máquinas
+
+Evitar conflitos de versões
+
+Comandos:
+
+python -m venv venv
+venv\Scripts\activate
+
+2. Instalação do Django e Django REST Framework
+
+Dentro da venv:
+
+pip install django djangorestframework
+
+
+Essas bibliotecas são a base do backend e da construção da API REST.
+
+3. Criação do projeto Django
+django-admin startproject core .
+
+
+Servidor local:
+
+python manage.py runserver
+
+4. Criação dos apps pet e vaccine
+python manage.py startapp pet
+python manage.py startapp vaccine
+
+
+Cada app representa um domínio isolado da aplicação.
+
+5. Configuração do Django REST Framework
+
+Instalação e registro no settings.py:
+
+INSTALLED_APPS = [
+    ...
+    'rest_framework',
+    'pet',
+    'vaccine',
+]
+
+
+Permitindo criação de APIs REST de forma estruturada.
+
+6. Versionamento com Git e criação do .gitignore
+
+Inicialização do repositório Git
+
+Primeiro commit
+
+Criação de .gitignore para evitar versionamento de arquivos sensíveis e pesados:
+
+venv/
+.env
+__pycache__/
+*.pyc
+
+7. Migração de SQLite para MySQL com .env
+
+O banco padrão db.sqlite3 foi substituído por MySQL, com configuração via variáveis de ambiente para segurança e portabilidade.
+
+Instalação:
+
+pip install mysqlclient python-dotenv
+
+
+Arquivo .env (exemplo):
+
+SECRET_KEY=sua_chave_secreta
+DEBUG=True
+
+DB_NAME=meubanco
+DB_USER=root
+DB_PASSWORD=senha123
+DB_HOST=db
+DB_PORT=3306
+
+MYSQL_ROOT_PASSWORD=root_pass
+MYSQL_DATABASE=dev_db
+MYSQL_USER=app_user
+MYSQL_PASSWORD=app_pass
+
+ALLOWED_HOSTS=127.0.0.1,localhost
+
+Configuração no settings.py:
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': os.getenv("DB_NAME"),
+        'USER': os.getenv("DB_USER"),
+        'PASSWORD': os.getenv("DB_PASSWORD"),
+        'HOST': os.getenv("DB_HOST"),
+        'PORT': os.getenv("DB_PORT"),
+    }
+}
+
+8. Dockerização: 
+Criação do container docker
+Arquivos .dockerignore (ignorar desnecessários para o container), Dockerfile (config geral do docker no projeto) e docker-compose.yml (configuração do container do banco de dados MySQL e web).
+
+É possivel usar os comandos docker para buildar e rodar o projeto.
+
+
+
+

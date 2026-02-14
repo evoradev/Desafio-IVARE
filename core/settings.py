@@ -43,6 +43,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # API
     'rest_framework',
+
+    # Apps
+    'pet',
 ]
 
 MIDDLEWARE = [
@@ -78,14 +81,16 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
+import os
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.getenv("DB_NAME"),
-        'USER': os.getenv("DB_USER"),
-        'PASSWORD': os.getenv("DB_PASSWORD"),
-        'HOST': os.getenv("DB_HOST"),
-        'PORT': os.getenv("DB_PORT"),
+        'NAME': os.getenv("DB_NAME", "desafio_ivare"),
+        'USER': os.getenv("DB_USER", "root"),
+        'PASSWORD': os.getenv("DB_PASSWORD", ""),
+        'HOST': os.getenv("DB_HOST", "localhost"), 
+        'PORT': os.getenv("DB_PORT", "3306"),
     }
 }
 

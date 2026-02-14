@@ -162,6 +162,18 @@ Arquivos .dockerignore (ignorar desnecessários para o container), Dockerfile (c
 
 É possivel usar os comandos docker para buildar e rodar o projeto.
 
+9. Desenvolvimento de endpoints REST para pets, incluindo model, serializer e views, seguindo as boas práticas de desenvolvimento de APIs RESTful. 
+Endpoints implementados:
+
+GET /api/pets/ - Listar todos os pets   
+POST /api/pets/ - Criar um novo pet
+GET /api/pets/{id}/ - Detalhes de um pet específico
+PUT /api/pets/{id}/ - Atualizar um pet específico
+DELETE /api/pets/{id}/ - Deletar um pet específico
+
+Testes funcinonais executados via Insomnia e DBeaver tudo funcionando corretamente. 
+Obs.: Ao conectar ao bando de dados MySQL via DBeaver, use as credenciais definidas no .env para garantir acesso ao banco do container.
+**Além disso, a porta definida no docker-compose.yml é 3307 para evitar conflitos com MySQL local, verifique esse ponto para garantir a conexão correta.
 
 
 

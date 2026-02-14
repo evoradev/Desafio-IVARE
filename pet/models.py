@@ -48,3 +48,30 @@ class Pet(models.Model):
     #@property
    # def is_vaccinated(self):
     #    return self.vaccines.exists()
+
+class PetVaccination(models.Model):
+    pet = models.ForeignKey(
+        'pet.Pet',   
+        on_delete=models.CASCADE,
+        related_name='vaccinations'
+    )
+
+    vaccine = models.ForeignKey(
+        'vaccine.Vaccine',
+        on_delete=models.PROTECT,
+        related_name='applications'
+    )
+
+    application_date = models.DateField()
+    number_of_aplications = models.PositiveIntegerField(default=1)
+    batch_number = models.CharField(max_length=50, blank=True)
+    veterinarian_name = models.CharField(max_length=150, blank=True)
+    observations = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('pet', 'vaccine', 'application_date')
+        ordering = ['-application_date']
+
+    def __str__(self):
+        return f"{self.pet.name} - {self.vaccine.name}"

@@ -1,12 +1,12 @@
 from rest_framework import serializers
-from .models import Pet
+from .models import Pet, PetVaccination
 
 class PetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pet
         fields = [
             'id', 'name', 'pet_type', 'owner',
-            'description', 'is_published',
+            'description', 'public',
             'created_at', 'updated_at', #'vaccines', #'is_vaccinated',
         ]
         
@@ -14,6 +14,11 @@ class PetSerializer(serializers.ModelSerializer):
    #     source='is_vaccinated',
    #     read_only=True,
    # )
+
+    public = serializers.BooleanField(
+        source='is_published',
+        read_only=True,
+    )
 
     created_at = serializers.DateTimeField(
         format="%Y-%m-%d %H:%M:%S",
@@ -56,3 +61,13 @@ class PetSerializer(serializers.ModelSerializer):
 
         super_validate = super().validate(attrs)
         return super_validate
+    
+class PetVaccinationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PetVaccination
+        fields = "__all__"
+        
+        created_at = serializers.DateTimeField(
+        format="%Y-%m-%d %H:%M:%S",
+        read_only=True,
+    )

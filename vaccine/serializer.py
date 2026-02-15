@@ -5,14 +5,9 @@ class VaccineSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vaccine
         fields = [
-            'id', 'name', 'manufacturer', 'disease_prevented', 'public',
+            'id', 'name', 'manufacturer', 'disease_prevented', 'is_published',
             'created_at', 'updated_at',
         ]
-
-    public = serializers.BooleanField(
-        source='is_published',
-        read_only=True,
-    )
 
     created_at = serializers.DateTimeField(
         format="%Y-%m-%d %H:%M:%S",

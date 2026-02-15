@@ -35,19 +35,21 @@ class Pet(models.Model):
         blank=True
     )
 
-    #vaccines = models.ManyToManyField(
-    #    "vaccines.Vaccine",
-    #    blank=True,
-    #    related_name="pets"
-    #)
+    vaccines = models.ManyToManyField(
+        'vaccine.Vaccine',
+        through='PetVaccination',
+        related_name='pets',
+        blank=True
+    )
+
 
     is_published = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    #@property
-   # def is_vaccinated(self):
-    #    return self.vaccines.exists()
+    @property
+    def is_vaccinated(self):
+        return self.vaccines.exists()
 
 class PetVaccination(models.Model):
     pet = models.ForeignKey(
@@ -62,7 +64,7 @@ class PetVaccination(models.Model):
         related_name='applications'
     )
 
-    application_date = models.DateField()
+    application_date = models.DateField(auto_now_add=True)
     number_of_aplications = models.PositiveIntegerField(default=1)
     batch_number = models.CharField(max_length=50, blank=True)
     veterinarian_name = models.CharField(max_length=150, blank=True)
@@ -75,3 +77,5 @@ class PetVaccination(models.Model):
 
     def __str__(self):
         return f"{self.pet.name} - {self.vaccine.name}"
+    
+    

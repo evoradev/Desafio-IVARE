@@ -2,7 +2,9 @@ Desafio IVARE — API Django
 
 API backend desenvolvida em Django + Django REST Framework, utilizando boas práticas de engenharia de software, isolamento de ambiente, configuração por variáveis de ambiente e banco de dados MySQL em container.
 
-Desenvolvido por Rafael Évora — @evoradev 🚀
+Desenvolvido por Rafael Évora — @evoradev 
+
+*DJANGO ADMIN: USERNAME: ROOT | PASSWORD: 1234 | EMAIL: email@email.com
 
 Objetivo do Projeto
 
@@ -174,6 +176,42 @@ DELETE /api/pets/{id}/ - Deletar um pet específico
 Testes funcinonais executados via Insomnia e DBeaver tudo funcionando corretamente. 
 Obs.: Ao conectar ao bando de dados MySQL via DBeaver, use as credenciais definidas no .env para garantir acesso ao banco do container.
 **Além disso, a porta definida no docker-compose.yml é 3307 para evitar conflitos com MySQL local, verifique esse ponto para garantir a conexão correta.
+
+
+10. Desenvolvimento de endpoints REST para vacinas, seguindo a mesma estrutura e boas práticas dos endpoints de pets.
+Endpoints implementados:
+GET /api/vaccines/ - Listar todas as vacinas
+POST /api/vaccines/ - Criar uma nova vacina
+GET /api/vaccines/{id}/ - Detalhes de uma vacina específica
+PUT /api/vaccines/{id}/ - Atualizar uma vacina específica
+DELETE /api/vaccines/{id}/ - Deletar uma vacina específica
+
+Testes funcionais realizados via Insomnia e DBeaver, confirmando o correto funcionamento dos endpoints e a persistência dos dados no banco MySQL.
+
+11. Desenvolvimento de endpoints REST para vacinação de pets, permitindo associar vacinas a pets e registrar a data da vacinação.
+Endpoints implementados:    
+POST /api/pet-vaccinations/ - Registrar uma vacinação de pet
+GET /api/pet-vaccinations/ - Listar todas as vacinações de pets
+GET /api/pet-vaccinations/{id}/ - Detalhes de uma vacinação específica
+PUT /api/pet-vaccinations/{id}/ - Atualizar uma vacinação específica
+DELETE /api/pet-vaccinations/{id}/ - Deletar uma vacinação específica
+
+OBS.: Para simplificar ainda mais o código e seguir boas práticas, foi implementado ModelViewSet nas Views de Pet, Vaccine e PetVaccination (Esse método é mais moderno e elegante).
+
+12. Validação de dados nos serializers para garantir que apenas pets e vacinas publicados possam ser associados em uma vacinação, com mensagens de erro claras para o usuário.
+Validate é nativa do serializer e possibilita validar entradas antes de realizar a criação ou atualização de um novo objeto no banco de dados.
+No caso do PetVaccinationSerializer, foi implementada uma validação personalizada para verificar se o pet e a vacina associados estão publicados. Se algum deles não estiver publicado, uma mensagem de erro específica é retornada para o usuário, indicando qual campo está causando o problema.
+
+13. Testes funcionais para garantir que as validações estão funcionando corretamente e que os endpoints estão respondendo conforme o esperado.
+Testes realizados via Insomnia para verificar as respostas dos endpoints e a correta aplicação das validações, garantindo que apenas pets e vacinas publicados possam ser associados em uma vacinação, e que mensagens de erro claras sejam retornadas quando as validações falharem.
+
+14. Automação dos testes via libs pytest, pytest-django e factory boy Faker para testes unitários e funcionais. Factory boy Faker será utilizado para criar dados para teste automaticamente e pytest-django para facilitar a integração dos testes com o Django.
+
+Instalação:
+pip install pytest pytest-django
+pip install factory_boy Faker
+
+Os aquivos serão criados dentro de "\tests\"  de cada app.
 
 
 

@@ -9,6 +9,7 @@ class PetSerializer(serializers.ModelSerializer):
         model = Pet
         fields = [
             'id', 'name',
+            'owner_name',
             'pet_type',
             'description',
             'is_published', 

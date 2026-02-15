@@ -49,7 +49,25 @@ Obs.: Projeto Dockerizado. Lembre-se de usar os scripts para criar o banco e dep
 
 Durante o desenvolvimento utilizei um venv e não o django diretamente por facilidade.
 
+## Testes
+
+### Testes funcionais realizados utilizando:
+Insomnia
+DBeaver
+
+### Validações confirmadas:
+Regras de negócio
+Restrições de relacionamento
+Autenticação JWT
+
 ## Como usar
+
+###Build
+Linhas de comando:
+docker compose build (instale o banco de dados primeiro)
+docker compose exec web python manage.py makemigrations
+docker compose exec web python manage.py migrate
+docker compose up
 
 ```mermaid
 flowchart TD
@@ -70,7 +88,7 @@ flowchart TD
   H --> J["Vacinas"]
   H --> K["Vacinacao"]
 
-  I --> I1["POST /api/pets/ - cria pet (owner automatico)"]
+  I --> I1["POST /api/pets/ - cria pet (user automatico)"]
   I1 --> I2["GET /api/pets/ - lista meus pets"]
   I2 --> I3["PATCH /api/pets/<id>/ - edita meu pet"]
   I3 --> I4["DELETE /api/pets/<id>/ - remove meu pet"]
@@ -92,61 +110,45 @@ flowchart TD
   T --> G
 ```
 
-## Fluxograma do banco de dados ##
+# Rotas da API
 
-## 🗄️ Database Relationships (ERD)
+Usuários
 
-```mermaid
-erDiagram
-    USER ||--o{ PET : owns
-    PET ||--o{ PET_VACCINATION : has
-    VACCINE ||--o{ PET_VACCINATION : applied_in
+POST /api/users/
+GET /api/users/me/
+PATCH /api/users/me/
 
-    USER {
-      int id
-      string username
-      string email
-    }
+Pets
 
-    PET {
-      int id
-      string name
-      string pet_type
-      string description
-      boolean is_published
-      datetime created_at
-      datetime updated_at
-      int owner_id
-    }
+GET /api/pets/
+POST /api/pets/
+GET /api/pets/{id}/
+PATCH /api/pets/{id}/
+DELETE /api/pets/{id}/
 
-    VACCINE {
-      int id
-      string name
-      string manufacturer
-      string disease_prevented
-      boolean is_published
-      datetime created_at
-      datetime updated_at
-    }
+Vacinas
 
-    PET_VACCINATION {
-      int id
-      int pet_id
-      int vaccine_id
-      date application_date
-      int number_of_aplications
-      string batch_number
-      string veterinarian_name
-      string observations
-      datetime created_at
-    }
-```
+GET /api/vaccines/
+POST /api/vaccines/
+GET /api/vaccines/{id}/
+PATCH /api/vaccines/{id}/
+DELETE /api/vaccines/{id}/
+
+Vacinação
+
+GET /api/pet-vaccinations/
+POST /api/pet-vaccinations/
+GET /api/pet-vaccinations/{id}/
+PATCH /api/pet-vaccinations/{id}/
+DELETE /api/pet-vaccinations/{id}/
+
+#### Obs.: Deixei o relacionamento no banco de dados de User com Pet como se User fosse o usuario do sistema fiz dessa forma para demonstrar o conhecimento na parte de Foreigner Key e Autenticação JWT. No banco podemos buscar animais por owner_name ou todos animais cadastrados de um user (usuario do sistema).
 
 
-## CRIAÇÃO DO APP - ETAPAS DO DESENVOLVIMENTO ##
+# CRIAÇÃO DO APP - ETAPAS DO DESENVOLVIMENTO 
 
 Etapas Realizadas no Projeto
-1. Criação do ambiente virtual (venv)
+### Criação do ambiente virtual (venv)
 
 Foi criado um ambiente virtual Python para:
 
@@ -161,7 +163,7 @@ Comandos:
 python -m venv venv
 venv\Scripts\activate
 
-2. Instalação do Django e Django REST Framework
+### Instalação do Django e Django REST Framework
 
 Dentro da venv:
 
@@ -170,22 +172,19 @@ pip install django djangorestframework
 
 Essas bibliotecas são a base do backend e da construção da API REST.
 
-3. Criação do projeto Django
+### Criação do projeto Django
 django-admin startproject core .
 
-
 Servidor local:
-
 python manage.py runserver
 
-4. Criação dos apps pet e vaccine
+### Criação dos apps pet e vaccine
 python manage.py startapp pet
 python manage.py startapp vaccine
 
-
 Cada app representa um domínio isolado da aplicação.
 
-5. Configuração do Django REST Framework
+### Configuração do Django REST Framework
 
 Instalação e registro no settings.py:
 
@@ -199,28 +198,17 @@ INSTALLED_APPS = [
 
 Permitindo criação de APIs REST de forma estruturada.
 
-6. Versionamento com Git e criação do .gitignore
+### Versionamento com Git e criação do .gitignore
 
 Inicialização do repositório Git
-
 Primeiro commit
-
 Criação de .gitignore para evitar versionamento de arquivos sensíveis e pesados:
 
-venv/
-.env
-__pycache__/
-*.pyc
-
-7. Migração de SQLite para MySQL com .env
+### Migração de SQLite para MySQL com .env
 
 O banco padrão db.sqlite3 foi substituído por MySQL, com configuração via variáveis de ambiente para segurança e portabilidade.
-
 Instalação:
-
 pip install mysqlclient python-dotenv
-
-
 Arquivo .env (exemplo):
 
 SECRET_KEY=sua_chave_secreta
@@ -252,13 +240,13 @@ DATABASES = {
     }
 }
 
-8. Dockerização: 
+### Dockerização: 
 Criação do container docker
 Arquivos .dockerignore (ignorar desnecessários para o container), Dockerfile (config geral do docker no projeto) e docker-compose.yml (configuração do container do banco de dados MySQL e web).
 
 É possivel usar os comandos docker para buildar e rodar o projeto.
 
-9. Desenvolvimento de endpoints REST para pets, incluindo model, serializer e views, seguindo as boas práticas de desenvolvimento de APIs RESTful. 
+### Desenvolvimento de endpoints REST para pets, incluindo model, serializer e views, seguindo as boas práticas de desenvolvimento de APIs RESTful. 
 Endpoints implementados:
 
 GET /api/pets/ - Listar todos os pets   
@@ -272,7 +260,7 @@ Obs.: Ao conectar ao bando de dados MySQL via DBeaver, use as credenciais defini
 **Além disso, a porta definida no docker-compose.yml é 3307 para evitar conflitos com MySQL local, verifique esse ponto para garantir a conexão correta.
 
 
-10. Desenvolvimento de endpoints REST para vacinas, seguindo a mesma estrutura e boas práticas dos endpoints de pets.
+### Desenvolvimento de endpoints REST para vacinas, seguindo a mesma estrutura e boas práticas dos endpoints de pets.
 Endpoints implementados:
 GET /api/vaccines/ - Listar todas as vacinas
 POST /api/vaccines/ - Criar uma nova vacina
@@ -282,7 +270,7 @@ DELETE /api/vaccines/{id}/ - Deletar uma vacina específica
 
 Testes funcionais realizados via Insomnia e DBeaver, confirmando o correto funcionamento dos endpoints e a persistência dos dados no banco MySQL.
 
-11. Desenvolvimento de endpoints REST para vacinação de pets, permitindo associar vacinas a pets e registrar a data da vacinação.
+### Desenvolvimento de endpoints REST para vacinação de pets, permitindo associar vacinas a pets e registrar a data da vacinação.
 Endpoints implementados:    
 POST /api/pet-vaccinations/ - Registrar uma vacinação de pet
 GET /api/pet-vaccinations/ - Listar todas as vacinações de pets
@@ -292,14 +280,14 @@ DELETE /api/pet-vaccinations/{id}/ - Deletar uma vacinação específica
 
 OBS.: Para simplificar ainda mais o código e seguir boas práticas, foi implementado ModelViewSet nas Views de Pet, Vaccine e PetVaccination (Esse método é mais moderno e elegante).
 
-12. Validação de dados nos serializers para garantir que apenas pets e vacinas publicados possam ser associados em uma vacinação, com mensagens de erro claras para o usuário.
+### Validação de dados nos serializers para garantir que apenas pets e vacinas publicados possam ser associados em uma vacinação, com mensagens de erro claras para o usuário.
 Validate é nativa do serializer e possibilita validar entradas antes de realizar a criação ou atualização de um novo objeto no banco de dados.
 No caso do PetVaccinationSerializer, foi implementada uma validação personalizada para verificar se o pet e a vacina associados estão publicados. Se algum deles não estiver publicado, uma mensagem de erro específica é retornada para o usuário, indicando qual campo está causando o problema.
 
-13. Testes funcionais para garantir que as validações estão funcionando corretamente e que os endpoints estão respondendo conforme o esperado.
+### Testes funcionais para garantir que as validações estão funcionando corretamente e que os endpoints estão respondendo conforme o esperado.
 Testes realizados via Insomnia para verificar as respostas dos endpoints e a correta aplicação das validações, garantindo que apenas pets e vacinas publicados possam ser associados em uma vacinação, e que mensagens de erro claras sejam retornadas quando as validações falharem.
 
-14. Implementaremos o relacionamento de PETs per OWNER utilizando as ferramentas django que oferece um model completo pronto para isso: 
+### Implementaremos o relacionamento de PETs per User utilizando as ferramentas django que oferece um model completo pronto para isso: 
 * from django.contrib.auth.models import User 
 
 Dessa forma não é necessário reinventar o que já foi feito, apenas implementar. 
@@ -318,7 +306,7 @@ GET /api/users/{id}/ - Detalhes de um usuário especifico
 PUT /api/users/{id}/ - Atualizar um usuário específico
 DELETE /api/users/{id}/ - Deletar um usuário específica
 
-15. Implementação de JWT usando djangorestframework_simplejwt para autenticação.
+### Implementação de JWT usando djangorestframework_simplejwt para autenticação.
 Atualizações aplicadas para validação do JWT em views e settings.py. Agora temos o novo endpoint:
 
 Método	URL

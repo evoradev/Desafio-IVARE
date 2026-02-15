@@ -21,6 +21,8 @@ Tecnologias Utilizadas
 - Django
 - Django REST Framework
 - SimpleJWT
+- Factory-boy + Faker
+- Pytest
 - MySQL
 - Docker
 - git & github
@@ -68,10 +70,37 @@ Autenticação JWT
 
 ### Build
 Linhas de comando:
+
+
 docker compose build (instale o banco de dados primeiro) - Para evitar problemas sugiro que execute dentro do docker-compose.yml o script db e depois o script web.
+
+
+Use preferencialmente: docker compose up db -d e depois docker compose up web -d 
+
+
 docker compose exec web python manage.py makemigrations
+
+
 docker compose exec web python manage.py migrate
+
+
 docker compose up
+
+
+### Como testar
+O projeto inclui PyTeste, factory-boy e Faker, caso desejar, basta utilizar as linhas de comando para realizar os testes automatizados com dados gerados aleatoriamente pelo factory-boy.
+
+#### Obs.: Os warnings são avisos do factory-boy que esta depreciado mas funciona bem para a finalidade.
+
+#### Comandos de teste
+docker compose exec web pytest
+
+#### Caso haja erros de conexão com o banco, forneça permições para o pytest criar bancos de teste no mysql
+##### docker exec -it desafio_mysql mysql -uroot -proot_pass -e "GRANT CREATE, DROP ON *.* TO 'app_user'@'%';"
+##### docker exec -it desafio_mysql mysql -uroot -proot_pass -e "GRANT ALL PRIVILEGES ON test_dev_db.* TO 'app_user'@'%';"
+##### docker exec -it desafio_mysql mysql -uroot -proot_pass -e "FLUSH PRIVILEGES;"
+##### docker compose exec web pytest
+
 
 ### Rotas, Autenticação e Cadastro
 
@@ -323,4 +352,5 @@ PATCH	/users/me/
 Todas as views já esperam validação o token antes de realizar operações ! 
 Dessa forma garantimos menor exposição do id de usuário e maior segurança nas operações da api.
 
+### Implementação de testes automatizados usando pytest e dados automaticos usando factory-boy Faker
 

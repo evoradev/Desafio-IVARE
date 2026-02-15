@@ -47,7 +47,8 @@ INSTALLED_APPS = [
     'rest_framework',
     # Apps
     'pet',
-    'vaccine'
+    'vaccine',
+    'core',
 ]
 
 MIDDLEWARE = [

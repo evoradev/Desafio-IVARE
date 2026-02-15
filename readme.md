@@ -49,50 +49,49 @@ Obs.: Projeto Dockerizado. Lembre-se de usar os scripts para criar o banco e dep
 
 Durante o desenvolvimento utilizei um venv e não o django diretamente por facilidade.
 
-## 🔄 API Usage Flow
+## Como usar
 
 ```mermaid
 flowchart TD
-  A[Início] --> B{Já tenho usuário?}
+  A["Inicio"] --> B{"Ja tenho usuario?"}
 
-  B -- Não --> C[POST /api/users/ <br/> Cria conta]
-  C --> D[POST /api/login/ <br/> username + password]
+  B -- "Nao" --> C["POST /api/users/ - cria conta"]
+  C --> D["POST /api/login/ - username + password"]
+  B -- "Sim" --> D
 
-  B -- Sim --> D[POST /api/login/ <br/> username + password]
+  D --> E{"Credenciais validas?"}
+  E -- "Nao" --> E1["401 Unauthorized - sem token"]
+  E -- "Sim" --> F["Recebe access + refresh"]
 
-  D --> E{Credenciais válidas?}
+  F --> G["Enviar header Authorization: Bearer access_token"]
+  G --> H{"O que testar agora?"}
 
-  E -- Não --> E1[401 Unauthorized <br/> Sem token]
-  E -- Sim --> F[Recebe access + refresh]
+  H --> I["Pets"]
+  H --> J["Vacinas"]
+  H --> K["Vacinacao"]
 
-  F --> G[Configurar Authorization <br/> Bearer access_token]
-  G --> H{O que testar agora?}
+  I --> I1["POST /api/pets/ - cria pet (owner automatico)"]
+  I1 --> I2["GET /api/pets/ - lista meus pets"]
+  I2 --> I3["PATCH /api/pets/<id>/ - edita meu pet"]
+  I3 --> I4["DELETE /api/pets/<id>/ - remove meu pet"]
 
-  H --> I[Pets]
-  H --> J[Vacinas]
-  H --> K[Vacinação]
+  J --> J1["POST /api/vaccines/ - cria vacina"]
+  J1 --> J2["PATCH /api/vaccines/<id>/ - publicar (is_published=true)"]
+  J2 --> J3["GET /api/vaccines/ - listar vacinas"]
 
-  I --> I1[POST /api/pets/ <br/> Cria pet (owner automático)]
-  I1 --> I2[GET /api/pets/ <br/> Lista apenas meus pets]
-  I2 --> I3[PATCH /api/pets/{id}/ <br/> Edita meu pet]
-  I3 --> I4[DELETE /api/pets/{id}/ <br/> Remove meu pet]
+  K --> K1{"Pet e Vaccine publicados?"}
+  K1 -- "Nao" --> K2["400 ValidationError - pet/vaccine nao publicado"]
+  K1 -- "Sim" --> K3["POST /api/pet-vaccinations/ - registrar aplicacao"]
+  K3 --> K4["GET /api/pet-vaccinations/ - listar minhas vacinacoes"]
+  K4 --> K5["PATCH /api/pet-vaccinations/<id>/ - editar registro"]
+  K5 --> K6["DELETE /api/pet-vaccinations/<id>/ - remover registro"]
 
-  J --> J1[POST /api/vaccines/ <br/> Cria vacina]
-  J1 --> J2[PATCH /api/vaccines/{id}/ <br/> Publicar vacina]
-  J2 --> J3[GET /api/vaccines/ <br/> Listar vacinas]
-
-  K --> K1{Pet e Vaccine publicados?}
-
-  K1 -- Não --> K2[400 ValidationError <br/> Pet/Vaccine não publicado]
-  K1 -- Sim --> K3[POST /api/pet-vaccinations/ <br/> Registrar aplicação]
-  K3 --> K4[GET /api/pet-vaccinations/ <br/> Listar vacinações]
-  K4 --> K5[PATCH /api/pet-vaccinations/{id}/ <br/> Editar registro]
-  K5 --> K6[DELETE /api/pet-vaccinations/{id}/ <br/> Remover registro]
-
-  F --> R[Se access expirar]
-  R --> S[POST /api/login/refresh/ <br/> refresh token]
-  S --> T[Recebe novo access]
+  F --> R["Se access expirar"]
+  R --> S["POST /api/login/refresh/ - refresh token"]
+  S --> T["Recebe novo access"]
   T --> G
+
+
 
 
 // CRIAÇÃO DO APP - ETAPAS DO DESENVOLVIMENTO //

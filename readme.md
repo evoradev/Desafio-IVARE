@@ -90,9 +90,7 @@ flowchart TD
   R --> S["POST /api/login/refresh/ - refresh token"]
   S --> T["Recebe novo access"]
   T --> G
-
-
-
+```
 
 // CRIAÇÃO DO APP - ETAPAS DO DESENVOLVIMENTO //
 

@@ -149,6 +149,8 @@ flowchart TD
 
 # Rotas da API
 
+#### As rotas são funcionais mediante JWT seguindo o fluxo demonstrado, lembre-se de cadastrar o Authenticator no seu aplicativo de testes (ex. Postman, Insomnia ou Thunder Cliente). Usei insomnia no projeto.
+
 Usuários
 
 POST /api/users/

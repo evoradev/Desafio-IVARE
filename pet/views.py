@@ -4,7 +4,7 @@ from .models import Pet, PetVaccination
 from .serializer import PetSerializer, PetVaccinationSerializer, UserSerializer
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.exceptions import PermissionDenied
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework import status
 
@@ -80,7 +80,13 @@ from rest_framework import status
 
 class PetViewSet(ModelViewSet):
     serializer_class = PetSerializer
-    permission_classes = [IsAuthenticated]
+
+    def get_permissions(self):
+        # GET = leitura pública
+        if self.request.method in ['GET', 'HEAD', 'OPTIONS']:
+            return [IsAuthenticatedOrReadOnly()]
+        # Escrita = autenticado
+        return [IsAuthenticated()]
 
     def get_queryset(self):
         # Usuário só enxerga seus próprios pets

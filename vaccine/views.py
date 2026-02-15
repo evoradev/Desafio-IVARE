@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404
 from .models import Vaccine
 from .serializer import VaccineSerializer
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticated
 
 # Sem VIEWSET
 # @api_view(['GET', 'POST'])
@@ -47,7 +47,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 class VaccineViewSet(ModelViewSet):
     serializer_class = VaccineSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         return Vaccine.objects.all().order_by("-created_at")

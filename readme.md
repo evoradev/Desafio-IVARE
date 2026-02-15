@@ -6,7 +6,8 @@ API backend desenvolvida em Django + Django REST Framework, utilizando boas prá
 
 Clínicas veterinárias precisam de um sistema para acompanhar o histórico de vacinação de pets, permitindo o cadastro de animais, vacinas e registros de aplicação.
 
-Objetivo do Projeto
+### Objetivo do Projeto
+
 Construir uma API robusta e escalável para gerenciamento de dados relacionados a pets e vacinas, com foco em:
 Padronização de ambiente entre desenvolvedores, Segurança de credenciais via variáveis de ambiente, Arquitetura modular com apps independentes, Preparação para deploy em produção.
 
@@ -31,6 +32,8 @@ pip freeze > requirements.txt
 Isso garante que qualquer desenvolvedor consiga reproduzir exatamente o mesmo ambiente.
 
 Estrutura do Projeto
+
+
 Desafio IVARE/
 ├── core/              # Configurações principais do projeto
 ├── pet/               # App responsável pelo domínio de pets e users
@@ -40,6 +43,8 @@ Desafio IVARE/
 ├── .env.example
 ├── .gitignore
 └── README.md
+
+
 
 Optei por criar pet e vaccine como apps separados para demonstração, mas poderiam ser criados em um unico app que possibilitasse o processo completo, mas para demonstrar o conhecimento em django, optei por utilizar mais de um app. Core serve apenas como configuração geral do projeto e apontamento para as rotar (router) no arquivo url. 
 
@@ -52,8 +57,7 @@ Durante o desenvolvimento utilizei um venv e não o django diretamente por facil
 ## Testes
 
 ### Testes funcionais realizados utilizando:
-Insomnia
-DBeaver
+Insomnia e DBeaver
 
 ### Validações confirmadas:
 Regras de negócio
@@ -62,12 +66,16 @@ Autenticação JWT
 
 ## Como usar
 
-###Build
+### Build
 Linhas de comando:
-docker compose build (instale o banco de dados primeiro)
+docker compose build (instale o banco de dados primeiro) - Para evitar problemas sugiro que execute dentro do docker-compose.yml o script db e depois o script web.
 docker compose exec web python manage.py makemigrations
 docker compose exec web python manage.py migrate
 docker compose up
+
+### Rotas, Autenticação e Cadastro
+
+#### Obs.: Deixei o relacionamento no banco de dados de User com Pet como se User fosse o usuario do sistema fiz dessa forma para demonstrar o conhecimento na parte de Foreigner Key e Autenticação JWT. No banco podemos buscar animais por owner_name ou todos animais cadastrados de um user (usuario do sistema).
 
 ```mermaid
 flowchart TD
@@ -141,8 +149,6 @@ POST /api/pet-vaccinations/
 GET /api/pet-vaccinations/{id}/
 PATCH /api/pet-vaccinations/{id}/
 DELETE /api/pet-vaccinations/{id}/
-
-#### Obs.: Deixei o relacionamento no banco de dados de User com Pet como se User fosse o usuario do sistema fiz dessa forma para demonstrar o conhecimento na parte de Foreigner Key e Autenticação JWT. No banco podemos buscar animais por owner_name ou todos animais cadastrados de um user (usuario do sistema).
 
 
 # CRIAÇÃO DO APP - ETAPAS DO DESENVOLVIMENTO 

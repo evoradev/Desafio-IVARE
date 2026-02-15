@@ -92,7 +92,58 @@ flowchart TD
   T --> G
 ```
 
-// CRIAÇÃO DO APP - ETAPAS DO DESENVOLVIMENTO //
+## Fluxograma do banco de dados ##
+
+## 🗄️ Database Relationships (ERD)
+
+```mermaid
+erDiagram
+    USER ||--o{ PET : owns
+    PET ||--o{ PET_VACCINATION : has
+    VACCINE ||--o{ PET_VACCINATION : applied_in
+
+    USER {
+      int id
+      string username
+      string email
+    }
+
+    PET {
+      int id
+      string name
+      string pet_type
+      string description
+      boolean is_published
+      datetime created_at
+      datetime updated_at
+      int owner_id
+    }
+
+    VACCINE {
+      int id
+      string name
+      string manufacturer
+      string disease_prevented
+      boolean is_published
+      datetime created_at
+      datetime updated_at
+    }
+
+    PET_VACCINATION {
+      int id
+      int pet_id
+      int vaccine_id
+      date application_date
+      int number_of_aplications
+      string batch_number
+      string veterinarian_name
+      string observations
+      datetime created_at
+    }
+```
+
+
+## CRIAÇÃO DO APP - ETAPAS DO DESENVOLVIMENTO ##
 
 Etapas Realizadas no Projeto
 1. Criação do ambiente virtual (venv)

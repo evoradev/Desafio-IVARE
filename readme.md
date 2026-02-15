@@ -147,6 +147,61 @@ flowchart TD
   T --> G
 ```
 
+### Diagrama de classes simplificado
+
+```mermaid
+erDiagram
+
+  USER {
+    int id PK "AUTO"
+    string username "REQUIRED"
+    string password "REQUIRED"
+    string first_name "optional"
+    string last_name "optional"
+    string email "optional"
+  }
+
+  PET {
+    int id PK "AUTO"
+    string name "REQUIRED"
+    int user_id FK "AUTO (JWT)"
+    string owner_name "REQUIRED"
+    string pet_type "REQUIRED"
+    string description "CONDITIONAL (generic types)"
+    boolean is_published "optional (default false)"
+    datetime created_at "AUTO"
+    datetime updated_at "AUTO"
+    boolean is_vaccinated "DERIVED"
+  }
+
+  VACCINE {
+    int id PK "AUTO"
+    string name "REQUIRED"
+    string manufacturer "optional"
+    string disease_prevented "optional"
+    boolean is_published "optional (default false)"
+    datetime created_at "AUTO"
+    datetime updated_at "AUTO"
+  }
+
+  PET_VACCINATION {
+    int id PK "AUTO"
+    int pet_id FK "REQUIRED"
+    int vaccine_id FK "REQUIRED"
+    date application_date "AUTO"
+    int number_of_aplications "optional (default 1)"
+    string batch_number "optional"
+    string veterinarian_name "optional"
+    text observations "optional"
+    datetime created_at "AUTO"
+    string UNIQUE "unique_together(pet_id, vaccine_id, application_date)"
+  }
+
+  USER ||--o{ PET : owns
+  PET ||--o{ PET_VACCINATION : has
+  VACCINE ||--o{ PET_VACCINATION : applied
+```
+
 # Rotas da API
 
 #### As rotas são funcionais mediante JWT seguindo o fluxo demonstrado, lembre-se de cadastrar o Authenticator no seu aplicativo de testes (ex. Postman, Insomnia ou Thunder Cliente). Usei insomnia no projeto.

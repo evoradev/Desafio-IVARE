@@ -4,21 +4,15 @@ API backend desenvolvida em Django + Django REST Framework, utilizando boas prá
 
 Desenvolvido por Rafael Évora — @evoradev 
 
-*DJANGO ADMIN: USERNAME: ROOT | PASSWORD: 1234 | EMAIL: email@email.com
-
 Objetivo do Projeto
 
 Construir uma API robusta e escalável para gerenciamento de dados relacionados a pets e vacinas, com foco em:
 
-Padronização de ambiente entre desenvolvedores
+Padronização de ambiente entre desenvolvedores, Segurança de credenciais via variáveis de ambiente, Arquitetura modular com apps independentes, Preparação para deploy em produção.
 
-Segurança de credenciais via variáveis de ambiente
+// CRIAÇÃO DO APP - DECISÕES ARQUITETURAIS //
 
-Arquitetura modular com apps independentes
-
-Preparação para deploy em produção
-
-🛠 Tecnologias Utilizadas
+Tecnologias Utilizadas
 
 Python 3
 
@@ -26,7 +20,9 @@ Django
 
 Django REST Framework
 
-MySQL (Docker)
+Docker
+
+MySQL
 
 python-dotenv
 
@@ -43,13 +39,20 @@ Isso garante que qualquer desenvolvedor consiga reproduzir exatamente o mesmo am
 Estrutura do Projeto
 Desafio IVARE/
 ├── core/              # Configurações principais do projeto
-├── pet/               # App responsável pelo domínio de pets
+├── pet/               # App responsável pelo domínio de pets e users
 ├── vaccine/           # App responsável pelo domínio de vacinas
 ├── manage.py
 ├── requirements.txt
 ├── .env.example
 ├── .gitignore
 └── README.md
+
+.
+.
+.
+
+
+// CRIAÇÃO DO APP - ETAPAS DO DESENVOLVIMENTO //
 
 Etapas Realizadas no Projeto
 1. Criação do ambiente virtual (venv)
@@ -205,13 +208,23 @@ No caso do PetVaccinationSerializer, foi implementada uma validação personaliz
 13. Testes funcionais para garantir que as validações estão funcionando corretamente e que os endpoints estão respondendo conforme o esperado.
 Testes realizados via Insomnia para verificar as respostas dos endpoints e a correta aplicação das validações, garantindo que apenas pets e vacinas publicados possam ser associados em uma vacinação, e que mensagens de erro claras sejam retornadas quando as validações falharem.
 
-14. Automação dos testes via libs pytest, pytest-django e factory boy Faker para testes unitários e funcionais. Factory boy Faker será utilizado para criar dados para teste automaticamente e pytest-django para facilitar a integração dos testes com o Django.
+14. Implementaremos o relacionamento de PETs per OWNER utilizando as ferramentas django que oferece um model completo pronto para isso: 
+* from django.contrib.auth.models import User 
 
-Instalação:
-pip install pytest pytest-django
-pip install factory_boy Faker
+Dessa forma não é necessário reinventar o que já foi feito, apenas implementar. 
+A funcionalidade será aplicada no app "pet" diretamente.
 
-Os aquivos serão criados dentro de "\tests\"  de cada app.
+Modificações aplicadas:
+Antes: todos viam tudo, todos criavam para qualquer usuário e API insegura. 
+Agora: usuário só vê seus próprios dados, usuário só cria para si mesmo, segurança aplicada corretamente e cumpre requisito de autenticação e autorização.
 
+Obs.: Utilizar metodos especificos e pré-definidos do Python, Django e Rest Framework ou até mesmo de FastAPI (outra lib para criação de API's) dinamiza o processo de desenvolvimento otimizando o tempo.
+
+Endpoints implementados:
+POST /api/users/ - Registrar um usuario
+GET /api/users/ - Listar todas usuarios
+GET /api/users/{id}/ - Detalhes de um usuário especifico
+PUT /api/users/{id}/ - Atualizar um usuário específico
+DELETE /api/users/{id}/ - Deletar um usuário específica
 
 

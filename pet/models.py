@@ -23,7 +23,12 @@ class Pet(models.Model):
 
     name = models.CharField(max_length=50)
 
-    owner = models.CharField(max_length=35)
+    # Relacionamento com o usuário (dono do pet)
+    owner = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="pets"
+    )
 
     pet_type = models.CharField(
         max_length=30,

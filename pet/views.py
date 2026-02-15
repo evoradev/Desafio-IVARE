@@ -1,11 +1,12 @@
 from rest_framework.decorators import api_view
+from django.contrib.auth.models import User
+from .models import Pet, PetVaccination
+from .serializer import PetSerializer, PetVaccinationSerializer, UserSerializer
+from rest_framework.viewsets import ModelViewSet
+from rest_framework.exceptions import PermissionDenied
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
-from django.shortcuts import get_object_or_404
-from .models import Pet, PetVaccination
-from .serializer import PetSerializer, PetVaccinationSerializer
-from rest_framework.viewsets import ModelViewSet
-from rest_framework.permissions import AllowAny
 
 #  FORMA TRADICIONAL DE CRIAR AS VIEWS, SEM USAR VIEWSETS OU GENERIC VIEWS DO DRF
 # @api_view(['GET', 'POST'])
@@ -78,21 +79,110 @@ from rest_framework.permissions import AllowAny
 # Usando VIEWSETS DO DRF, que é uma forma mais rápida e prática de criar as views, pois já vem com as operações básicas de CRUD implementadas.
 
 class PetViewSet(ModelViewSet):
-    queryset = Pet.objects.all()
     serializer_class = PetSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Pet.objects.all().order_by('-created_at')
+        # Usuário só enxerga seus próprios pets
+        return Pet.objects.filter(
+            owner=self.request.user
+        ).order_by('-created_at')
+
+    def perform_create(self, serializer):
+        # Define automaticamente o dono como usuário logado
+        serializer.save(owner=self.request.user)
+
+    def perform_update(self, serializer):
+        # Impede editar pet de outro usuário
+        if serializer.instance.owner != self.request.user:
+            raise PermissionDenied("You do not have permission to edit this pet.")
+        serializer.save()
+
+    def perform_destroy(self, instance):
+        # Impede deletar pet de outro usuário
+        if instance.owner != self.request.user:
+            raise PermissionDenied("You do not have permission to delete this pet.")
+        instance.delete()
 
 
 class PetVaccinationViewSet(ModelViewSet):
-    queryset = PetVaccination.objects.all()
     serializer_class = PetVaccinationSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
+        # Só vacinações de pets do usuário logado
         return PetVaccination.objects.select_related(
             'pet',
             'vaccine'
+        ).filter(
+            pet__owner=self.request.user
         ).order_by('-application_date')
+
+    def perform_create(self, serializer):
+        pet = serializer.validated_data.get("pet")
+
+        if pet.owner != self.request.user:
+            raise PermissionDenied(
+                "You do not have permission to add vaccination to this pet."
+            )
+
+        serializer.save()
+
+    def perform_update(self, serializer):
+        if serializer.instance.pet.owner != self.request.user:
+            raise PermissionDenied(
+                "You do not have permission to edit this vaccination."
+            )
+
+        serializer.save()
+
+    def perform_destroy(self, instance):
+        if instance.pet.owner != self.request.user:
+            raise PermissionDenied(
+                "You do not have permission to remove this vaccination."
+            )
+
+        instance.delete()
+
+# Essa forma não é segura pois permite todas as operações por qualquer user. Comentado caso queira utilizar para testes, mas não é o ideal. Deixarei o ideal logo abaixo.
+#class UserViewSet(ModelViewSet):
+#    queryset = User.objects.all()
+#    serializer_class = UserSerializer
+#    permission_classes = [AllowAny]
+
+# ViewSet padrão para User
+class UserViewSet(ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+    # Permite registro sem autenticação
+    def get_permissions(self):
+        if self.action == "create":
+            return [AllowAny()]
+        return [IsAuthenticated()]
+
+    # Impede listagem de todos usuários
+    def list(self, request, *args, **kwargs):
+        return Response(
+            {"detail": "You cannot list all users."},
+            status=status.HTTP_405_METHOD_NOT_ALLOWED
+        )
+
+    # Usuário só pode ver o próprio perfil
+    def retrieve(self, request, *args, **kwargs):
+        if int(kwargs["pk"]) != request.user.id:
+            raise PermissionDenied("You can only view your own profile.")
+        return super().retrieve(request, *args, **kwargs)
+
+    # Usuário só pode editar o próprio perfil
+    def update(self, request, *args, **kwargs):
+        if int(kwargs["pk"]) != request.user.id:
+            raise PermissionDenied("You can only edit your own profile.")
+        return super().update(request, *args, **kwargs)
+
+    # Bloqueia exclusão de usuários via API
+    def destroy(self, request, *args, **kwargs):
+        return Response(
+            {"detail": "Deletion of user is not allowed via API."},
+            status=status.HTTP_405_METHOD_NOT_ALLOWED
+        )

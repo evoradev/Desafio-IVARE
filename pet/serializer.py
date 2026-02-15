@@ -1,15 +1,21 @@
 from rest_framework import serializers
 from vaccine.models import Vaccine
 from .models import Pet, PetVaccination
+from django.contrib.auth.models import User
 
 class PetSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Pet
         fields = [
-            'id', 'name', 'pet_type', 'owner',
-            'description', 'is_published', 'vaccines',
-            'created_at', 'updated_at', 'is_vaccinated',
+            'id', 'name',
+            'pet_type',
+            'description',
+            'is_published', 
+            'vaccines',
+            'created_at', 
+            'updated_at', 
+            'is_vaccinated',
         ]
         
 
@@ -54,6 +60,33 @@ class PetSerializer(serializers.ModelSerializer):
 
         super_validate = super().validate(attrs)
         return super_validate
+
+# Serializer para criar usuário (dono do pet) usando model padrão do Django
+class UserSerializer(serializers.ModelSerializer):
+
+    password = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = User
+        fields = [
+            "id",
+            "username",
+            "first_name",
+            "last_name",
+            "email",
+            "password",
+        ]
+
+    def create(self, validated_data):
+        user = User.objects.create_user(
+            username=validated_data["username"],
+            email=validated_data.get("email"),
+            password=validated_data["password"],
+            first_name=validated_data.get("first_name", ""),
+            last_name=validated_data.get("last_name", "")
+        )
+        return user
+
     
 class PetVaccinationSerializer(serializers.ModelSerializer):
     # Para mostrar no GET

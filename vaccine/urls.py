@@ -8,7 +8,7 @@ from rest_framework.routers import DefaultRouter
 #]
 
 router = DefaultRouter()
-router.register(r'vaccines', views.VaccineViewSet, basename='vaccines')
+router.register(r'vaccines', views.VaccineViewSet, basename='vaccines') # restrições aplicadas na viewset, usando jwt para controle de acesso. É permitido visualizar sem JWT mas não criar.
 urlpatterns = [
     path('', include(router.urls)),
 ]

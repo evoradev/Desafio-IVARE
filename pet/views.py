@@ -1,4 +1,4 @@
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, action
 from django.contrib.auth.models import User
 from .models import Pet, PetVaccination
 from .serializer import PetSerializer, PetVaccinationSerializer, UserSerializer
@@ -155,34 +155,45 @@ class UserViewSet(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-    # Permite registro sem autenticação
     def get_permissions(self):
         if self.action == "create":
             return [AllowAny()]
         return [IsAuthenticated()]
 
-    # Impede listagem de todos usuários
+    # Bloqueia listagem
     def list(self, request, *args, **kwargs):
         return Response(
             {"detail": "You cannot list all users."},
             status=status.HTTP_405_METHOD_NOT_ALLOWED
         )
 
-    # Usuário só pode ver o próprio perfil
+    # Bloqueia retrieve por ID (opcional agora)
     def retrieve(self, request, *args, **kwargs):
-        if int(kwargs["pk"]) != request.user.id:
-            raise PermissionDenied("You can only view your own profile.")
-        return super().retrieve(request, *args, **kwargs)
-
-    # Usuário só pode editar o próprio perfil
-    def update(self, request, *args, **kwargs):
-        if int(kwargs["pk"]) != request.user.id:
-            raise PermissionDenied("You can only edit your own profile.")
-        return super().update(request, *args, **kwargs)
-
-    # Bloqueia exclusão de usuários via API
-    def destroy(self, request, *args, **kwargs):
         return Response(
-            {"detail": "Deletion of user is not allowed via API."},
+            {"detail": "Use /users/me/"},
             status=status.HTTP_405_METHOD_NOT_ALLOWED
         )
+
+    # Bloqueia delete
+    def destroy(self, request, *args, **kwargs):
+        return Response(
+            {"detail": "Deletion of user is not allowed."},
+            status=status.HTTP_405_METHOD_NOT_ALLOWED
+        )
+
+    # Endpoint /me/ para o usuário acessar e editar seus próprios dados
+    @action(detail=False, methods=["get", "patch"])
+    def me(self, request):
+        if request.method == "GET":
+            serializer = self.get_serializer(request.user)
+            return Response(serializer.data)
+
+        if request.method == "PATCH":
+            serializer = self.get_serializer(
+                request.user,
+                data=request.data,
+                partial=True
+            )
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data)

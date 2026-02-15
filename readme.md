@@ -1,39 +1,33 @@
-Desafio IVARE — API Django
+# Desafio IVARE — API Django #
 
 API backend desenvolvida em Django + Django REST Framework, utilizando boas práticas de engenharia de software, isolamento de ambiente, configuração por variáveis de ambiente e banco de dados MySQL em container.
 
-Desenvolvido por Rafael Évora — @evoradev 
+## Desenvolvido por Rafael Évora — @evoradev ##
+
+Clínicas veterinárias precisam de um sistema para acompanhar o histórico de vacinação de pets, permitindo o cadastro de animais, vacinas e registros de aplicação.
 
 Objetivo do Projeto
-
 Construir uma API robusta e escalável para gerenciamento de dados relacionados a pets e vacinas, com foco em:
-
 Padronização de ambiente entre desenvolvedores, Segurança de credenciais via variáveis de ambiente, Arquitetura modular com apps independentes, Preparação para deploy em produção.
 
-// CRIAÇÃO DO APP - DECISÕES ARQUITETURAIS //
+## CRIAÇÃO DO APP - DECISÕES ARQUITETURAIS ##
 
 Tecnologias Utilizadas
 
-Python 3
+## Tecnologias
 
-Django
+- Python
+- Django
+- Django REST Framework
+- SimpleJWT
+- MySQL
+- Docker
+- git & github
 
-Django REST Framework
-
-Docker
-
-MySQL
-
-python-dotenv
-
-Git / GitHub
-
-Gerenciamento de Dependências
+## Gerenciamento de Dependências
 
 Todas as dependências do projeto são controladas via:
-
 pip freeze > requirements.txt
-
 Isso garante que qualquer desenvolvedor consiga reproduzir exatamente o mesmo ambiente.
 
 Estrutura do Projeto
@@ -47,9 +41,58 @@ Desafio IVARE/
 ├── .gitignore
 └── README.md
 
-.
-.
-.
+Optei por criar pet e vaccine como apps separados para demonstração, mas poderiam ser criados em um unico app que possibilitasse o processo completo, mas para demonstrar o conhecimento em django, optei por utilizar mais de um app. Core serve apenas como configuração geral do projeto e apontamento para as rotar (router) no arquivo url. 
+
+Optei por uma estrutura bem definida: Models, Views, Serializers e Urls. Embora fosse possivel criar um arquivo e separar os models dentro, optei por usar o padrão django para pequenos projetos que é utilizar apenas um model.py, view.py e serializers.py sem arquivos maiores separando as classes, mas, para um projeto grande ou que visa escalabilidade o ideal é criar pastas. Ex.: models/(pet ou petVaccination)/model.py e os dados exclusivos daquela classe. 
+
+Obs.: Projeto Dockerizado. Lembre-se de usar os scripts para criar o banco e depois os scripts para a api, caso contrário, o banco possivelmente não será criado à tempo para a configuração "web" o que causará erros no terminal.
+
+Durante o desenvolvimento utilizei um venv e não o django diretamente por facilidade.
+
+## 🔄 API Usage Flow
+
+```mermaid
+flowchart TD
+  A[Início] --> B{Já tenho usuário?}
+
+  B -- Não --> C[POST /api/users/ <br/> Cria conta]
+  C --> D[POST /api/login/ <br/> username + password]
+
+  B -- Sim --> D[POST /api/login/ <br/> username + password]
+
+  D --> E{Credenciais válidas?}
+
+  E -- Não --> E1[401 Unauthorized <br/> Sem token]
+  E -- Sim --> F[Recebe access + refresh]
+
+  F --> G[Configurar Authorization <br/> Bearer access_token]
+  G --> H{O que testar agora?}
+
+  H --> I[Pets]
+  H --> J[Vacinas]
+  H --> K[Vacinação]
+
+  I --> I1[POST /api/pets/ <br/> Cria pet (owner automático)]
+  I1 --> I2[GET /api/pets/ <br/> Lista apenas meus pets]
+  I2 --> I3[PATCH /api/pets/{id}/ <br/> Edita meu pet]
+  I3 --> I4[DELETE /api/pets/{id}/ <br/> Remove meu pet]
+
+  J --> J1[POST /api/vaccines/ <br/> Cria vacina]
+  J1 --> J2[PATCH /api/vaccines/{id}/ <br/> Publicar vacina]
+  J2 --> J3[GET /api/vaccines/ <br/> Listar vacinas]
+
+  K --> K1{Pet e Vaccine publicados?}
+
+  K1 -- Não --> K2[400 ValidationError <br/> Pet/Vaccine não publicado]
+  K1 -- Sim --> K3[POST /api/pet-vaccinations/ <br/> Registrar aplicação]
+  K3 --> K4[GET /api/pet-vaccinations/ <br/> Listar vacinações]
+  K4 --> K5[PATCH /api/pet-vaccinations/{id}/ <br/> Editar registro]
+  K5 --> K6[DELETE /api/pet-vaccinations/{id}/ <br/> Remover registro]
+
+  F --> R[Se access expirar]
+  R --> S[POST /api/login/refresh/ <br/> refresh token]
+  S --> T[Recebe novo access]
+  T --> G
 
 
 // CRIAÇÃO DO APP - ETAPAS DO DESENVOLVIMENTO //
@@ -226,5 +269,16 @@ GET /api/users/ - Listar todas usuarios
 GET /api/users/{id}/ - Detalhes de um usuário especifico
 PUT /api/users/{id}/ - Atualizar um usuário específico
 DELETE /api/users/{id}/ - Deletar um usuário específica
+
+15. Implementação de JWT usando djangorestframework_simplejwt para autenticação.
+Atualizações aplicadas para validação do JWT em views e settings.py. Agora temos o novo endpoint:
+
+Método	URL
+POST	/users/     (apenas para registro)
+GET	    /users/me/ 
+PATCH	/users/me/ 
+
+Todas as views já esperam validação o token antes de realizar operações ! 
+Dessa forma garantimos menor exposição do id de usuário e maior segurança nas operações da api.
 
 
